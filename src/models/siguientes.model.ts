@@ -29,7 +29,7 @@ export class Siguientes extends Entity {
   })
   Nombre: string;
 
-  @belongsTo(() => Gramatica, {name: 'Gramatica_Perteneces'})
+  @belongsTo(() => Gramatica, {name: 'Gramatica_Pertenece'})
   Gramatica_Pertenece: number;
 
   constructor(data?: Partial<Siguientes>) {

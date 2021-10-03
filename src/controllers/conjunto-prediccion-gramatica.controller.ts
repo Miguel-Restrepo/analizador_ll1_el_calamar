@@ -33,6 +33,6 @@ export class ConjuntoPrediccionGramaticaController {
   async getGramatica(
     @param.path.number('id') id: typeof ConjuntoPrediccion.prototype.Id,
   ): Promise<Gramatica> {
-    return this.conjuntoPrediccionRepository.Gramatica_Perteneces(id);
+    return this.conjuntoPrediccionRepository.Gramatica_Pertenece(id);
   }
 }

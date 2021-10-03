@@ -33,6 +33,6 @@ export class VariableGramaticaController {
   async getGramatica(
     @param.path.number('id') id: typeof Variable.prototype.Id,
   ): Promise<Gramatica> {
-    return this.variableRepository.Gramatica_Perteneces(id);
+    return this.variableRepository.Gramatica_Pertenece(id);
   }
 }

@@ -33,6 +33,6 @@ export class SiguientesGramaticaController {
   async getGramatica(
     @param.path.number('id') id: typeof Siguientes.prototype.Id,
   ): Promise<Gramatica> {
-    return this.siguientesRepository.Gramatica_Perteneces(id);
+    return this.siguientesRepository.Gramatica_Pertenece(id);
   }
 }

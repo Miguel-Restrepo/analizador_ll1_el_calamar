@@ -10,13 +10,13 @@ export class PrimerosRepository extends DefaultCrudRepository<
   PrimerosRelations
 > {
 
-  public readonly Gramatica_Perteneces: BelongsToAccessor<Gramatica, typeof Primeros.prototype.Id>;
+  public readonly Gramatica_Pertenece: BelongsToAccessor<Gramatica, typeof Primeros.prototype.Id>;
 
   constructor(
     @inject('datasources.postgresds') dataSource: PostgresdsDataSource, @repository.getter('GramaticaRepository') protected gramaticaRepositoryGetter: Getter<GramaticaRepository>,
   ) {
     super(Primeros, dataSource);
-    this.Gramatica_Perteneces = this.createBelongsToAccessorFor('Gramatica_Perteneces', gramaticaRepositoryGetter,);
-    this.registerInclusionResolver('Gramatica_Perteneces', this.Gramatica_Perteneces.inclusionResolver);
+    this.Gramatica_Pertenece = this.createBelongsToAccessorFor('Gramatica_Pertenece', gramaticaRepositoryGetter,);
+    this.registerInclusionResolver('Gramatica_Pertenece', this.Gramatica_Pertenece.inclusionResolver);
   }
 }

@@ -33,6 +33,6 @@ export class PrimerosGramaticaController {
   async getGramatica(
     @param.path.number('id') id: typeof Primeros.prototype.Id,
   ): Promise<Gramatica> {
-    return this.primerosRepository.Gramatica_Perteneces(id);
+    return this.primerosRepository.Gramatica_Pertenece(id);
   }
 }
