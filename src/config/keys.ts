@@ -1,6 +1,5 @@
 export namespace keys {
-  export const AESKey = 'ProyectoM@J';
-  export const nombreCampoComprobante = 'file';
-  export const carpetaComprobantePago = '../../archivos';
-  export const extensionesPermitidasComprobante: string[] = ['.txt', '.docx'];
+  export const nombreCampoGramatica = 'file';
+  export const carpetaGramaticas = '../../archivos';
+  export const extensionesPermitidasGramatica: string[] = ['.JSON'];
 }

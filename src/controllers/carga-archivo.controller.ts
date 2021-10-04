@@ -51,17 +51,20 @@ export class CargaArchivoController {
       },
     },
   })
-  async comprobantePago(
+  async gramaticaPlano(
     @inject(RestBindings.Http.RESPONSE) response: Response,
     @requestBody.file() request: Request,
   ): Promise<object | false> {
-    const rutaComprobantePago = path.join(__dirname, llaves.carpetaComprobantePago);
-    let res = await this.SubirArchivoPlano(rutaComprobantePago, llaves.nombreCampoComprobante, request, response, llaves.extensionesPermitidasComprobante);
+    const rutagramaticaPlano = path.join(__dirname, llaves.carpetaGramaticas);
+    let res = await this.SubirArchivoPlano(rutagramaticaPlano, llaves.nombreCampoGramatica, request, response, llaves.extensionesPermitidasGramatica);
     if (res) {
-      const nombre_archivo = response.req?.file.filename;
-      if (nombre_archivo) {
-        return {filename: nombre_archivo};
+      if (response.req.file) {
+        const nombre_archivo = response.req?.file.filename;
+        if (nombre_archivo) {
+          return {filename: nombre_archivo};
+        }
       }
+
     }
     return res;
   }
