@@ -2,18 +2,7 @@ import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository'
 import {Variable} from './variable.model';
 import {Gramatica} from './gramatica.model';
 
-@model({
-  settings: {
-    foreignKeys: {
-      fk_gramatica: {
-        name: 'fk_gramatica',
-        entity: 'Gramatica',
-        entityKey: 'Id',
-        foreignKey: 'Gramatica_Pertenece',
-      },
-    },
-  },
-})
+@model()
 export class Siguientes extends Entity {
 
   @property({

@@ -1,18 +1,7 @@
 import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {Gramatica} from './gramatica.model';
 
-@model({
-  settings: {
-    foreignKeys: {
-      fk_gramatica: {
-        name: 'fk_gramatica',
-        entity: 'Gramatica',
-        entityKey: 'Id',
-        foreignKey: 'Gramatica_Pertenece',
-      },
-    },
-  },
-})
+@model()
 export class ConjuntoPrediccion extends Entity {
   @property({
     type: 'number',

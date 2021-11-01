@@ -1,4 +1,4 @@
-import {inject} from '@loopback/core';
+import {inject, service} from '@loopback/core';
 import {
   HttpErrors,
   post,
@@ -10,8 +10,11 @@ import {
 import multer from 'multer';
 import path from 'path';
 import {keys as llaves} from '../config/keys';
+import {AnalizadorLl1Service} from '../services';
 export class CargaArchivoController {
   constructor(
+    @service(AnalizadorLl1Service)
+    public servicioAnalizadorLL1: AnalizadorLl1Service,
   ) { }
 
   /**
@@ -61,7 +64,8 @@ export class CargaArchivoController {
       if (response.req.file) {
         const nombre_archivo = response.req?.file.filename;
         if (nombre_archivo) {
-          return {filename: nombre_archivo};
+          let gramaticaAnalizad = this.servicioAnalizadorLL1.leerJson(nombre_archivo);
+          return gramaticaAnalizad;
         }
       }
 

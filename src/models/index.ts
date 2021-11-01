@@ -4,3 +4,8 @@ export * from './produccion.model';
 export * from './primeros.model';
 export * from './siguientes.model';
 export * from './conjunto-prediccion.model';
+export * from './primeros-t.model';
+export * from './variable-t.model';
+export * from './gramatica-t.model';
+export * from './siguientes-t.model';
+export * from './conjunto-prediccion-t.model';

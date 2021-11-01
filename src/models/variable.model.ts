@@ -2,18 +2,7 @@ import {Entity, model, property, belongsTo, hasMany} from '@loopback/repository'
 import {Gramatica} from './gramatica.model';
 import {Produccion} from './produccion.model';
 
-@model({
-  settings: {
-    foreignKeys: {
-      fk_gramatica: {
-        name: 'fk_gramatica',
-        entity: 'Gramatica',
-        entityKey: 'Id',
-        foreignKey: 'Gramatica_Pertenece',
-      },
-    },
-  },
-})
+@model()
 export class Variable extends Entity {
   @property({
     type: 'number',
