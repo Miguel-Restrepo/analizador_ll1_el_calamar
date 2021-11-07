@@ -16,6 +16,7 @@ import {
   del,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
 import {Siguientes} from '../models';
 import {SiguientesRepository} from '../repositories';
@@ -25,7 +26,30 @@ export class SiguientesController {
     @repository(SiguientesRepository)
     public siguientesRepository : SiguientesRepository,
   ) {}
-
+  @get('/obtenersiguientes/{id}')
+  @response(200, {
+    description: 'primeros model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(Siguientes, {includeRelations: true}),
+      },
+    },
+  })
+  async obtenerPrimeros(
+    @param.path.number('id') id: number,
+    @param.filter(Siguientes, {exclude: 'where'}) filter?: FilterExcludingWhere<Siguientes>
+  ): Promise<Siguientes[]> {
+    let x= await this.siguientesRepository.find({
+      where: {
+        Gramatica: id
+      }
+    });
+    if(x)
+    {
+      return x;
+    }
+    throw new HttpErrors[403]('No se encontraron Conjuntos Predicion');
+  }
   @post('/siguientes')
   @response(200, {
     description: 'Siguientes model instance',

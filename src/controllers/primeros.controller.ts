@@ -16,6 +16,7 @@ import {
   del,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
 import {Primeros} from '../models';
 import {PrimerosRepository} from '../repositories';
@@ -57,7 +58,30 @@ export class PrimerosController {
   ): Promise<Count> {
     return this.primerosRepository.count(where);
   }
-
+  @get('/obtenerprimeros/{id}')
+  @response(200, {
+    description: 'primeros model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(Primeros, {includeRelations: true}),
+      },
+    },
+  })
+  async obtenerPrimeros(
+    @param.path.number('id') id: number,
+    @param.filter(Primeros, {exclude: 'where'}) filter?: FilterExcludingWhere<Primeros>
+  ): Promise<Primeros[]> {
+    let x= await this.primerosRepository.find({
+      where: {
+        Gramatica: id
+      }
+    });
+    if(x)
+    {
+      return x;
+    }
+    throw new HttpErrors[403]('No se encontraron Conjuntos Predicion');
+  }
   @get('/primeros')
   @response(200, {
     description: 'Array of Primeros model instances',

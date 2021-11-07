@@ -10,6 +10,7 @@ import {
   post,
   param,
   get,
+  HttpErrors,
   getModelSchemaRef,
   patch,
   put,
@@ -109,6 +110,30 @@ export class ConjuntoPrediccionController {
     @param.filter(ConjuntoPrediccion, {exclude: 'where'}) filter?: FilterExcludingWhere<ConjuntoPrediccion>
   ): Promise<ConjuntoPrediccion> {
     return this.conjuntoPrediccionRepository.findById(id, filter);
+  }
+   @get('/obtenercp/{id}')
+  @response(200, {
+    description: 'ConjuntoPrediccion model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(ConjuntoPrediccion, {includeRelations: true}),
+      },
+    },
+  })
+  async obtenerCP(
+    @param.path.number('id') id: number,
+    @param.filter(ConjuntoPrediccion, {exclude: 'where'}) filter?: FilterExcludingWhere<ConjuntoPrediccion>
+  ): Promise<ConjuntoPrediccion[]> {
+    let x= await this.conjuntoPrediccionRepository.find({
+      where: {
+        Gramatica: id
+      }
+    });
+    if(x)
+    {
+      return x;
+    }
+    throw new HttpErrors[403]('No se encontraron Conjuntos Predicion');
   }
 
   @patch('/conjunto-prediccions/{id}')
