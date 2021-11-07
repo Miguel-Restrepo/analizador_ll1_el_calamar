@@ -28,8 +28,10 @@ export class AnalizadorLl1Service {
   /*
    * Add service methods here
    */
-  async leerJson(ruta: string): Promise<GramaticaT> {
-    let rawdata = fs.readFileSync('C:/Users/migue/Documents/Proyectos_Lenguajes/analizador_ll1_el_calamar/archivos/' + ruta);
+  async leerJson(ruta: string, direccion: string): Promise<GramaticaT> {
+    console.log(direccion);
+
+    let rawdata = fs.readFileSync(direccion + '/' + ruta);
     let student = JSON.parse(rawdata);
     //CREAMOS LA GRAMATICA
     let gramaticat: GramaticaT = new GramaticaT();
@@ -103,7 +105,7 @@ export class AnalizadorLl1Service {
           primero.produciones.push("λ");
         }
         else if (producionArray[0] == "λ") {//TERCERA CONDICION
-          let salida=true;
+          let salida = true;
           producionArray.forEach(producionA => {
             if (producionA != "λ") {
               if (!(this.tiene_Capital(producionArray[1])) && salida) {
@@ -119,7 +121,7 @@ export class AnalizadorLl1Service {
                   }
                 });
                 primero.produciones.push(cadenaInt);
-                salida=false;
+                salida = false;
               }
             }
           })
@@ -166,7 +168,7 @@ export class AnalizadorLl1Service {
           if (!(this.tiene_Capital(producionArray[0])))//PRIMERA CONDICIÓN
           {
             let sinFin = true;
-            let cadenaInt= "";
+            let cadenaInt = "";
             producionArray.forEach(simbolo => {
               if (!(this.tiene_Capital(simbolo)) && sinFin) {
                 if (!retorno.includes(simbolo))
@@ -210,7 +212,7 @@ export class AnalizadorLl1Service {
                   producionArray.forEach(simbolo => {
                     if (!(this.tiene_Capital(simbolo)) && sinFin && simbolo != "") {
                       if (!retorno.includes(simbolo))
-                      cadenaInt = cadenaInt + simbolo;
+                        cadenaInt = cadenaInt + simbolo;
 
                     }
                     else {

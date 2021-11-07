@@ -63,8 +63,9 @@ export class CargaArchivoController {
     if (res) {
       if (response.req.file) {
         const nombre_archivo = response.req?.file.filename;
-        if (nombre_archivo) {
-          let gramaticaAnalizad = this.servicioAnalizadorLL1.leerJson(nombre_archivo);
+        const direccion= response.req.file.destination;
+        if (nombre_archivo && direccion) {
+          let gramaticaAnalizad = this.servicioAnalizadorLL1.leerJson(nombre_archivo, direccion);
           return gramaticaAnalizad;
         }
       }
@@ -79,7 +80,8 @@ export class CargaArchivoController {
      * @param request
      * @param response
      */
-  private SubirArchivoPlano(storePath: string, fieldname: string, request: Request, response: Response, acceptedExt: string[]): Promise<object> {
+  private SubirArchivoPlano(storePath: string, fieldname: string,
+     request: Request, response: Response, acceptedExt: string[]): Promise<object> {
     return new Promise<object>((resolve, reject) => {
       const storage = this.GetMulterStorageConfig(storePath);
       const upload = multer({
