@@ -495,10 +495,11 @@ export class AnalizadorLl1Service {
         element.produciones.forEach(elemento => {
           prod=prod+elemento;
         });
+        primero.Produciones=prod;
       }
       if(gramtica.Id)
       {
-        primero.Gramatica_Pertenece=gramtica.Id;
+        primero.Gramatica=gramtica.Id;
       }
       await this.primerosRepository.create(primero);
     });
@@ -514,10 +515,11 @@ export class AnalizadorLl1Service {
         element.produciones.forEach(elemento => {
           prod=prod+elemento;
         });
+        siguiente.Produciones=prod;
       }
       if(gramtica.Id)
       {
-        siguiente.Gramatica_Pertenece=gramtica.Id;
+        siguiente.Gramatica=gramtica.Id;
       }
       await this.siguientesRepository.create(siguiente);
 
@@ -534,10 +536,11 @@ export class AnalizadorLl1Service {
         element.producciones.forEach(elemento => {
           prod=prod+elemento;
         });
+        cp.Produciones=prod;
       }
       if(gramtica.Id)
       {
-        cp.Gramatica_Pertenece=gramtica.Id;
+        cp.Gramatica=gramtica.Id;
       }
       await this.conjuntoPrediccionRepository.create(cp);
 
