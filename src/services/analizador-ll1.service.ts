@@ -2,6 +2,7 @@ import { /* inject, */ BindingScope, injectable} from '@loopback/core';
 import {
   repository
 } from '@loopback/repository';
+import {Gramatica} from '../models';
 import {ConjuntoPrediccionT} from '../models/conjunto-prediccion-t.model';
 import {GramaticaT} from '../models/gramatica-t.model';
 import {PrimerosT} from '../models/primeros-t.model';
@@ -35,6 +36,7 @@ export class AnalizadorLl1Service {
     let student = JSON.parse(rawdata);
     //CREAMOS LA GRAMATICA
     let gramaticat: GramaticaT = new GramaticaT();
+    gramaticat.nombre=student.nombre;
     gramaticat.siguientes = [];
     gramaticat.variables = [];
     gramaticat.conjuntoPrediccion = [];
@@ -297,8 +299,7 @@ export class AnalizadorLl1Service {
 
                   tmpNewPrim = [];
                   tmpPrim.forEach(element => {
-                    if (element != "λ")
-                    {
+                    if (element != "λ") {
                       tmpNewPrim.push(element);
                     }
                   });
@@ -358,7 +359,7 @@ export class AnalizadorLl1Service {
 
     return -2;
   }
-  iniciaCon(cadenaLarga: string, cadena: string): boolean {
+  iniciaCon(cadenaLarga: string, cadena: string): boolean {//NO SE USA
     let cLarga = cadenaLarga.split('');
     let cCorta = cadena.split('');
     if ((cLarga[0] == cCorta[0] && cLarga[1] == cCorta[1]) || (cLarga[0] == cCorta[0] && cLarga[1] != "'"))
@@ -407,6 +408,7 @@ export class AnalizadorLl1Service {
       })
 
     });// λ
+    gramaticaT.es = this.verificarPertenece(gramaticaT);
     console.log("Gramatica");
     console.log(gramaticaT);
     console.log("Primeros");
@@ -415,6 +417,11 @@ export class AnalizadorLl1Service {
     console.log(gramaticaT.siguientes);
     console.log("Conjunto Prediccion");
     console.log(gramaticaT.conjuntoPrediccion);
+    if (gramaticaT.es) {
+      console.log("La gramatrica si pertenece");
+    } else {
+      console.log("La gramatrica NO pertenece");
+    }
     this.gramaticaanalizada = gramaticaT;
 
   }
@@ -447,5 +454,33 @@ export class AnalizadorLl1Service {
 
     return retorno;
   }
+  verificarPertenece(gramaticaT: GramaticaT): boolean {
+    let ultima = "";
+    let pertenece = true;
+    let tempProduciones: string[] = [];
+    gramaticaT.conjuntoPrediccion.forEach(element => {
+      if (ultima == element.variable) {
+        tempProduciones.forEach(elemento => {
+          if (element.producciones.includes(elemento)) {
+            pertenece = false;
+          }
 
+        });
+
+      }
+      else {
+        tempProduciones = [];
+      }
+    });
+    if (pertenece) {
+      this.guardarGramatica(gramaticaT);
+    }
+    return pertenece;
+  }
+  guardarGramatica(gramaticaT: GramaticaT) {
+    let gramaticaGuardar = new Gramatica();
+    if (gramaticaT.nombre)
+      gramaticaGuardar.Archivo = gramaticaT.nombre;
+    this.gramaticaRepository.create(gramaticaGuardar);
+  }
 }
