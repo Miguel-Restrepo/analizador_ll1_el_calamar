@@ -2,13 +2,13 @@ import { /* inject, */ BindingScope, injectable} from '@loopback/core';
 import {
   repository
 } from '@loopback/repository';
-import {Gramatica} from '../models';
+import {ConjuntoPrediccion, Gramatica, Primeros, Siguientes} from '../models';
 import {ConjuntoPrediccionT} from '../models/conjunto-prediccion-t.model';
 import {GramaticaT} from '../models/gramatica-t.model';
 import {PrimerosT} from '../models/primeros-t.model';
 import {SiguientesT} from '../models/siguientes-t.model';
 import {VariableT} from '../models/variable-t.model';
-import {GramaticaRepository, PrimerosRepository, ProduccionRepository, SiguientesRepository, VariableRepository} from '../repositories';
+import {GramaticaRepository, PrimerosRepository, ProduccionRepository,ConjuntoPrediccionRepository, SiguientesRepository, VariableRepository} from '../repositories';
 'use strict';
 const fs = require('fs');
 @injectable({scope: BindingScope.TRANSIENT})
@@ -24,6 +24,8 @@ export class AnalizadorLl1Service {
     public primerosRepository: PrimerosRepository,
     @repository(SiguientesRepository)
     public siguientesRepository: SiguientesRepository,
+    @repository(ConjuntoPrediccionRepository)
+    public conjuntoPrediccionRepository: ConjuntoPrediccionRepository,
   ) { }
   gramaticaanalizada: GramaticaT = new GramaticaT()
   /*
@@ -477,10 +479,69 @@ export class AnalizadorLl1Service {
     }
     return pertenece;
   }
-  guardarGramatica(gramaticaT: GramaticaT) {
+  async guardarGramatica(gramaticaT: GramaticaT) {
     let gramaticaGuardar = new Gramatica();
     if (gramaticaT.nombre)
       gramaticaGuardar.Archivo = gramaticaT.nombre;
-    this.gramaticaRepository.create(gramaticaGuardar);
+    let gramtica= await this.gramaticaRepository.create(gramaticaGuardar);
+    gramaticaT.primeros.forEach(async element => {
+      let primero= new Primeros();
+      if (element.variable) {
+        primero.Nombre=element.variable;
+      }
+      if(element.produciones)
+      {
+        let prod="";
+        element.produciones.forEach(elemento => {
+          prod=prod+elemento;
+        });
+      }
+      if(gramtica.Id)
+      {
+        primero.Gramatica_Pertenece=gramtica.Id;
+      }
+      await this.primerosRepository.create(primero);
+    });
+    gramaticaT.siguientes.forEach(async element => {
+      let siguiente= new Siguientes();
+      if(element.variable)
+      {
+        siguiente.Nombre=element.variable;
+      }
+      if(element.produciones)
+      {
+        let prod="";
+        element.produciones.forEach(elemento => {
+          prod=prod+elemento;
+        });
+      }
+      if(gramtica.Id)
+      {
+        siguiente.Gramatica_Pertenece=gramtica.Id;
+      }
+      await this.siguientesRepository.create(siguiente);
+
+    });
+    gramaticaT.conjuntoPrediccion.forEach(async element => {
+      let cp= new ConjuntoPrediccion();
+      if(element.variable)
+      {
+        cp.Nombre=element.variable;
+      }
+      if(element.producciones)
+      {
+        let prod="";
+        element.producciones.forEach(elemento => {
+          prod=prod+elemento;
+        });
+      }
+      if(gramtica.Id)
+      {
+        cp.Gramatica_Pertenece=gramtica.Id;
+      }
+      await this.conjuntoPrediccionRepository.create(cp);
+
+    });
+    //this.primerosRepository.create()
   }
 }

@@ -15,6 +15,11 @@ export class ConjuntoPrediccion extends Entity {
     required: true,
   })
   Nombre: string;
+  @property({
+    type: 'string',
+    required: true,
+  })
+  Produciones: string;
 
   @belongsTo(() => Gramatica, {name: 'Gramatica_Pertenece'})
   Gramatica_Pertenece: number;
