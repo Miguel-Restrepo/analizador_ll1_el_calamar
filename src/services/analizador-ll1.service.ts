@@ -235,108 +235,128 @@ export class AnalizadorLl1Service {
 
   generarsiguientes(gramaticaT: GramaticaT) {
     let contador = 0;
-    gramaticaT.variables.forEach(async (element: VariableT) => {
+    gramaticaT.variables.forEach(async (elemento: VariableT) => {//recorre variables para analizar uno a uno
       let siguiente: SiguientesT = new SiguientesT;
+      siguiente.variable = elemento.variable;
       siguiente.produciones = [];
-      siguiente.variable = element.variable;
-      if (contador == 0) {
+      if (contador == 0) {//Primera regla
         if (!siguiente.produciones.includes("$"))
           siguiente.produciones.push("$");
       }
-      contador++;
-      element.producciones.forEach(producion => {
-        if (this.iniciaCon(producion, element.variable)) {
-          let tempprod = producion.split('');
-          if (tempprod[1] == "'" && tempprod[2] == "") {
-            gramaticaT.primeros[contador - 1].produciones.forEach(primerostmp => {
-              if (!siguiente.produciones.includes(primerostmp))
-                siguiente.produciones.push(primerostmp);
-            })
+      gramaticaT.variables.forEach(async (element: VariableT) => {//recorremos todas las variables para buscar la variable
+        element.producciones.forEach(producion => {
+          console.log(producion);
 
-          }
-          else if (tempprod[1] == "") {
-            gramaticaT.primeros[contador - 1].produciones.forEach(primerostmp => {
-              if (!siguiente.produciones.includes(primerostmp))
-                siguiente.produciones.push(primerostmp);
-            })
-          }
-          else if (tempprod[1] != "'") {
-            if (this.tiene_Capital(tempprod[1])) {//TERCERA REGLA
-              gramaticaT.primeros.forEach(primero => {
-                if (primero.variable == element.variable) {
-                  element.producciones.forEach(nuevo => {
-                    if (!siguiente.produciones.includes(nuevo))
-                      siguiente.produciones.push(nuevo);
-                  })
+          let producionArray = producion.split('');
+
+          if (producion.includes(elemento.variable) && !(producion.includes(elemento.variable + "'"))) {
+            let posicionEncuentra = this.posicion(producion, elemento.variable);
+            console.log(posicionEncuentra);
+            if ((-2) != posicionEncuentra) {
+              if ((-1) == posicionEncuentra || producionArray[posicionEncuentra] == "λ")//Cuarta condicion* si hay un -1 es por q es lamda lo q sigue
+              {
+                if (gramaticaT.siguientes[gramaticaT.siguientes.length - 1]) {
+                  siguiente.produciones = gramaticaT.siguientes[gramaticaT.siguientes.length - 1].produciones;
+                  console.log("check point 2" + siguiente.produciones);
                 }
-              })
 
-            }
-            else {
-              let sinFin = true;
-              let contadort = 0;
-              tempprod.forEach(simbolo => {
-                if (contadort > 0) {
-                  if (!(this.tiene_Capital(simbolo)) && sinFin) {
-                    if (!siguiente.produciones.includes(simbolo))
-                      siguiente.produciones.push(simbolo);
+              }
+              else if (!(this.tiene_Capital(producionArray[posicionEncuentra])))//TERCERA CONDICIÓN
+              {
+                let sinFin = true;
+                let cadenaInt = "";
+                for (let i = posicionEncuentra; i < producionArray.length; i++) {
+                  if (!(this.tiene_Capital(producionArray[i])) && sinFin) {
+                    if (!cadenaInt.includes(producionArray[i]) && producionArray[i] != "'")
+                      cadenaInt = cadenaInt + producionArray[i];
+
                   }
                   else {
-                    sinFin = false;//CUANDO DEJE DE EXISTIR LA MMINUSCULA SALGA
+                    sinFin = false;
                   }
 
                 }
-                contadort++;
 
-              });
+                console.log("check point 1" + cadenaInt);
 
-            }
-
-
-          } else {
-            if (this.tiene_Capital(tempprod[1])) {//TERCERA REGLA
-              gramaticaT.primeros.forEach(primero => {
-                if (primero.variable == element.variable) {
-                  element.producciones.forEach(nuevo => {
-                    if (!siguiente.produciones.includes(nuevo))
-                      siguiente.produciones.push(nuevo);
-                  })
+                siguiente.produciones.push(cadenaInt);
+              }
+              else {//Tercera Condicion
+                console.log("check point 3 " + producionArray[posicionEncuentra]);
+                let tmpPrim = [];
+                let tmpNewPrim: string[] = [];
+                if ((producionArray[posicionEncuentra + 1] == "'")) {
+                  let buscar = producionArray[posicionEncuentra] + "'";
+                  tmpPrim = this.buscarprimero(gramaticaT, buscar);
                 }
-              })
-
-            }
-            else {
-              let sinFin = true;
-              let contadort = 0;
-              tempprod.forEach(simbolo => {
-                if (contadort > 1) {
-                  if (!(this.tiene_Capital(simbolo)) && sinFin) {
-                    if (!siguiente.produciones.includes(simbolo))
-                      siguiente.produciones.push(simbolo);
-                  }
-                  else {
-                    sinFin = false;//CUANDO DEJE DE EXISTIR LA MMINUSCULA SALGA
-                  }
-
+                else {
+                  tmpPrim = this.buscarprimero(gramaticaT, producionArray[posicionEncuentra]);
                 }
-                contadort++;
+                if (tmpPrim.includes("λ")) {
+                  console.log("incluye λ");
 
-              });
-
+                  tmpNewPrim = [];
+                  tmpPrim.forEach(element => {
+                    if (element != "λ")
+                    {
+                      tmpNewPrim.push(element);
+                    }
+                  });
+                  let tmpSig = this.buscarSiguiente(gramaticaT, producionArray[posicionEncuentra]);
+                  tmpSig.forEach(element => {
+                    tmpNewPrim.push(element);
+                  });
+                }
+                else {
+                  tmpNewPrim = tmpPrim;
+                }
+                if (tmpNewPrim != [])
+                  siguiente.produciones = tmpNewPrim;
+              }
             }
+
+
 
           }
 
-        }
-
+        });
       });
-      gramaticaT.siguientes.push(siguiente);
+      if (siguiente.produciones != [])//verifica que se haya añadido algo como minimo
+      {gramaticaT.siguientes.push(siguiente);}
+      contador++;
     });
 
     this.generarConjuntoPrediccion(gramaticaT);
 
 
 
+  }
+  posicion(cadenaLarga: string, cadena: string): number {
+    let cLarga = cadenaLarga.split('');
+    let cCorta = cadena.split('');
+    for (let i = 0; i < cLarga.length; i++) {
+      if (cLarga[i] == cCorta[0]) {
+        if (cCorta.length == 2) {
+          if (cLarga[i + 1] == cCorta[1]) {
+            if ((i + 2) >= cLarga.length) {
+              return -1;
+            } else {
+              return i + 2;
+            }
+          }
+        }
+        else {
+          if ((i + 1) >= cLarga.length) {
+            return -1;
+          } else {
+            return i + 1;
+          }
+        }
+      }
+
+    }
+
+    return -2;
   }
   iniciaCon(cadenaLarga: string, cadena: string): boolean {
     let cLarga = cadenaLarga.split('');
@@ -370,6 +390,8 @@ export class AnalizadorLl1Service {
         }
         else {//Caso en que los prim son de una minuscula no una mayuscula
           let sinFin = true;
+
+
           producionArray.forEach(simbolo => {
             if (!(this.tiene_Capital(simbolo)) && sinFin) {
               if (!conjuntoPrediccionT.producciones.includes(simbolo))
@@ -397,21 +419,33 @@ export class AnalizadorLl1Service {
 
   }
   buscarprimero(gramaticaT: GramaticaT, buscado: string): string[] {
+    let retorno: string[] = [];
     gramaticaT.primeros.forEach(element => {
-      if (element.variable == buscado)
-        return element.produciones;
-    })
-    console.log("No se encontro  primero");
+      console.log(element.variable + "comparable" + buscado);
 
-    return [];
+      if (element.variable == buscado) {
+        console.log(element.produciones);
+        retorno = element.produciones;
+      }
+    })
+    if (retorno == [])
+      console.log("No se encontro  primero");
+
+    return retorno;
   }
   buscarSiguiente(gramaticaT: GramaticaT, buscado: string): string[] {
+    let retorno: string[] = [];
     gramaticaT.siguientes.forEach(element => {
-      if (element.variable == buscado)
-        return element.produciones;
+      if (element.variable == buscado) {
+        retorno = element.produciones;
+
+      }
+
     })
-    console.log("No se encontro  siguiente");
-    return [];
+    if (retorno == [])
+      console.log("No se encontro  primero");
+
+    return retorno;
   }
 
 }
