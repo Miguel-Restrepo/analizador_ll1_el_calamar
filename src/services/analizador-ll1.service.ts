@@ -493,7 +493,13 @@ export class AnalizadorLl1Service {
       {
         let prod="";
         element.produciones.forEach(elemento => {
-          prod=prod+elemento;
+          if (prod=="")
+          {
+            prod=prod+elemento;
+          }
+          else{
+            prod=prod+", "+elemento;
+          }
         });
         primero.Produciones=prod;
       }
@@ -513,7 +519,13 @@ export class AnalizadorLl1Service {
       {
         let prod="";
         element.produciones.forEach(elemento => {
-          prod=prod+elemento;
+          if (prod=="")
+          {
+            prod=prod+elemento;
+          }
+          else{
+            prod=prod+", "+elemento;
+          }
         });
         siguiente.Produciones=prod;
       }
@@ -534,7 +546,13 @@ export class AnalizadorLl1Service {
       {
         let prod="";
         element.producciones.forEach(elemento => {
-          prod=prod+elemento;
+          if (prod=="")
+          {
+            prod=prod+elemento;
+          }
+          else{
+            prod=prod+", "+elemento;
+          }
         });
         cp.Produciones=prod;
       }
