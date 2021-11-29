@@ -194,7 +194,7 @@ export class AnalizadorLl1Service {
             gramaticaT.variables.forEach((varibles: VariableT) => {
               varibles.producciones.forEach((producionI: String) => {
                 if (producionI.includes((buscada))) {
-                  let adquiridos = this.recursivaCase2(gramaticaT, buscada)
+                  let adquiridos = this.recursivaCase2(gramaticaT, buscada);
                   adquiridos.forEach(nuevo => {
                     if (!retorno.includes(nuevo))
                       retorno.push(nuevo);

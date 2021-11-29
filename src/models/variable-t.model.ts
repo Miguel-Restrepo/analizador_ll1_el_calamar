@@ -13,7 +13,11 @@ export class VariableT extends Model {
   })
   producciones: string[];
 
-
+  @property({
+    type: 'number',
+  })
+  orden?: number;
+  
   constructor(data?: Partial<VariableT>) {
     super(data);
   }

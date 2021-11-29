@@ -9,3 +9,4 @@ export * from './variable-t.model';
 export * from './gramatica-t.model';
 export * from './siguientes-t.model';
 export * from './conjunto-prediccion-t.model';
+export * from './estado-t.model';
