@@ -1,4 +1,4 @@
-import { /* inject, */ BindingScope, injectable} from '@loopback/core';
+import { /* inject, */ BindingScope, injectable, service} from '@loopback/core';
 import {
   repository
 } from '@loopback/repository';
@@ -8,7 +8,9 @@ import {GramaticaT} from '../models/gramatica-t.model';
 import {PrimerosT} from '../models/primeros-t.model';
 import {SiguientesT} from '../models/siguientes-t.model';
 import {VariableT} from '../models/variable-t.model';
-import {GramaticaRepository, PrimerosRepository, ProduccionRepository,ConjuntoPrediccionRepository, SiguientesRepository, VariableRepository} from '../repositories';
+import {ConjuntoPrediccionRepository, GramaticaRepository, PrimerosRepository, ProduccionRepository, SiguientesRepository, VariableRepository} from '../repositories';
+import {AnalizadorLr1Service} from '../services/analizador-lr1.service';
+import {AnalizadorLrarService} from '../services/analizador-lrar.service';
 'use strict';
 const fs = require('fs');
 @injectable({scope: BindingScope.TRANSIENT})
@@ -26,6 +28,10 @@ export class AnalizadorLl1Service {
     public siguientesRepository: SiguientesRepository,
     @repository(ConjuntoPrediccionRepository)
     public conjuntoPrediccionRepository: ConjuntoPrediccionRepository,
+    @service(AnalizadorLr1Service)
+    public servicioAnalizadorLR1: AnalizadorLr1Service,
+    @service(AnalizadorLrarService)
+    public servicioAnalizadorLRAR: AnalizadorLrarService,
   ) { }
   gramaticaanalizada: GramaticaT = new GramaticaT()
   /*
@@ -38,7 +44,7 @@ export class AnalizadorLl1Service {
     let student = JSON.parse(rawdata);
     //CREAMOS LA GRAMATICA
     let gramaticat: GramaticaT = new GramaticaT();
-    gramaticat.nombre=student.nombre;
+    gramaticat.nombre = student.nombre;
     gramaticat.siguientes = [];
     gramaticat.variables = [];
     gramaticat.conjuntoPrediccion = [];
@@ -425,6 +431,8 @@ export class AnalizadorLl1Service {
       console.log("La gramatrica NO pertenece");
     }
     this.gramaticaanalizada = gramaticaT;
+    this.servicioAnalizadorLR1.analizarLR1(this.gramaticaanalizada);//analizamos si es lr1
+    this.servicioAnalizadorLRAR.analizarLRAR(this.gramaticaanalizada);//analizamos si es lrar
 
   }
   buscarprimero(gramaticaT: GramaticaT, buscado: string): string[] {
@@ -483,82 +491,71 @@ export class AnalizadorLl1Service {
     let gramaticaGuardar = new Gramatica();
     if (gramaticaT.nombre)
       gramaticaGuardar.Archivo = gramaticaT.nombre;
-    let gramtica= await this.gramaticaRepository.create(gramaticaGuardar);
+    let gramtica = await this.gramaticaRepository.create(gramaticaGuardar);
     gramaticaT.primeros.forEach(async element => {
-      let primero= new Primeros();
+      let primero = new Primeros();
       if (element.variable) {
-        primero.Nombre=element.variable;
+        primero.Nombre = element.variable;
       }
-      if(element.produciones)
-      {
-        let prod="";
+      if (element.produciones) {
+        let prod = "";
         element.produciones.forEach(elemento => {
-          if (prod=="")
-          {
-            prod=prod+elemento;
+          if (prod == "") {
+            prod = prod + elemento;
           }
-          else{
-            prod=prod+", "+elemento;
+          else {
+            prod = prod + ", " + elemento;
           }
         });
-        primero.Produciones=prod;
+        primero.Produciones = prod;
       }
-      if(gramtica.Id)
-      {
-        primero.Gramatica=gramtica.Id;
+      if (gramtica.Id) {
+        primero.Gramatica = gramtica.Id;
       }
       await this.primerosRepository.create(primero);
     });
     gramaticaT.siguientes.forEach(async element => {
-      let siguiente= new Siguientes();
-      if(element.variable)
-      {
-        siguiente.Nombre=element.variable;
+      let siguiente = new Siguientes();
+      if (element.variable) {
+        siguiente.Nombre = element.variable;
       }
-      if(element.produciones)
-      {
-        let prod="";
+      if (element.produciones) {
+        let prod = "";
         element.produciones.forEach(elemento => {
-          if (prod=="")
-          {
-            prod=prod+elemento;
+          if (prod == "") {
+            prod = prod + elemento;
           }
-          else{
-            prod=prod+", "+elemento;
+          else {
+            prod = prod + ", " + elemento;
           }
         });
-        siguiente.Produciones=prod;
+        siguiente.Produciones = prod;
       }
-      if(gramtica.Id)
-      {
-        siguiente.Gramatica=gramtica.Id;
+      if (gramtica.Id) {
+        siguiente.Gramatica = gramtica.Id;
       }
       await this.siguientesRepository.create(siguiente);
 
     });
     gramaticaT.conjuntoPrediccion.forEach(async element => {
-      let cp= new ConjuntoPrediccion();
-      if(element.variable)
-      {
-        cp.Nombre=element.variable;
+      let cp = new ConjuntoPrediccion();
+      if (element.variable) {
+        cp.Nombre = element.variable;
       }
-      if(element.producciones)
-      {
-        let prod="";
+      if (element.producciones) {
+        let prod = "";
         element.producciones.forEach(elemento => {
-          if (prod=="")
-          {
-            prod=prod+elemento;
+          if (prod == "") {
+            prod = prod + elemento;
           }
-          else{
-            prod=prod+", "+elemento;
+          else {
+            prod = prod + ", " + elemento;
           }
         });
-        cp.Produciones=prod;
+        cp.Produciones = prod;
       }
-      if(gramtica.Id)
-      {
-        cp.Gramatica=gramtica.Id;
+      if (gramtica.Id) {
+        cp.Gramatica = gramtica.Id;
       }
       await this.conjuntoPrediccionRepository.create(cp);
 

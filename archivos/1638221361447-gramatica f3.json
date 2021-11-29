@@ -2,7 +2,7 @@
   "nombre": "Gramatica Fase 3",
   "Variables_produciones": [
     "S->CC",
-    "C->ad",
+    "C->aC",
     "C->d"
   ]
 }

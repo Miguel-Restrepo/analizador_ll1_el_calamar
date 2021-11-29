@@ -1,5 +1,6 @@
 import {Model, model, property} from '@loopback/repository';
 import {ConjuntoPrediccionT} from './conjunto-prediccion-t.model';
+import {EstadoT} from './estado-t.model';
 import {PrimerosT} from './primeros-t.model';
 import {SiguientesT} from './siguientes-t.model';
 import {VariableT} from './variable-t.model';
@@ -11,6 +12,12 @@ export class GramaticaT extends Model {
   })
   nombre?: string;
 
+  @property({
+    type: 'boolean',
+    default: false,
+  })
+  extendida: boolean;
+  
   @property({
     type: 'array',
     itemType: 'VariableT',
@@ -40,6 +47,18 @@ export class GramaticaT extends Model {
     default: false,
   })
   es: boolean;
+
+  @property({
+    type: 'array',
+    itemType: 'EstadoT',
+  })
+  estadosLR1: EstadoT[];
+
+  @property({
+    type: 'array',
+    itemType: 'EstadoT',
+  })
+  estadosLRAR: EstadoT[];
 
 
   constructor(data?: Partial<GramaticaT>) {

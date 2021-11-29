@@ -20,7 +20,11 @@ export class EstadoT extends Model {
   })
   adyacencias?: EstadoT[];
 
-
+  @property({
+    type: 'string',
+  })
+  R?: string;
+  
   constructor(data?: Partial<EstadoT>) {
     super(data);
   }
