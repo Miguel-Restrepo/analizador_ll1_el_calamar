@@ -12,7 +12,7 @@ export class EstadoT extends Model {
     type: 'array',
     itemType: 'VariableT',
   })
-  variables?: VariableT[];
+  variables: VariableT[];
 
   @property({
     type: 'array',
@@ -24,7 +24,7 @@ export class EstadoT extends Model {
     type: 'string',
   })
   R?: string;
-  
+
   constructor(data?: Partial<EstadoT>) {
     super(data);
   }

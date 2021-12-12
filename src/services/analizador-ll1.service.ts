@@ -431,8 +431,12 @@ export class AnalizadorLl1Service {
       console.log("La gramatrica NO pertenece");
     }
     this.gramaticaanalizada = gramaticaT;
-    this.servicioAnalizadorLR1.analizarLR1(this.gramaticaanalizada);//analizamos si es lr1
-    this.servicioAnalizadorLRAR.analizarLRAR(this.gramaticaanalizada);//analizamos si es lrar
+    let gramaticaLR1 = new GramaticaT();
+    gramaticaLR1 = gramaticaT;
+    let gramaticaLRAR = new GramaticaT();
+    gramaticaLRAR = gramaticaT;
+    this.servicioAnalizadorLR1.analizarLR1(gramaticaLR1);//analizamos si es lr1
+    this.servicioAnalizadorLRAR.analizarLRAR(gramaticaLRAR);//analizamos si es lrar
 
   }
   buscarprimero(gramaticaT: GramaticaT, buscado: string): string[] {

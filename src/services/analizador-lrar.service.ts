@@ -33,28 +33,36 @@ export class AnalizadorLrarService {
     }
     nuevaVariable.producciones = [];
     nuevaVariable.producciones.push(gramaticaT.variables[0].variable);
+
     let nuevasVariables: VariableT[] = [];
     nuevasVariables.push(nuevaVariable);
-    gramaticaT.variables.forEach(element => {
+    variables.forEach(element => {
       nuevasVariables.push(element);
     });
-    gramaticaT.variables = nuevasVariables;
+    let estado = new EstadoT();
+    estado.nombre = "l-0";
+    estado.variables = nuevasVariables;
     gramaticaT.extendida = true;
-
+    gramaticaT.estadosLRAR = [];
+    gramaticaT.estadosLRAR.push(estado);
     this.colocarPuntos(gramaticaT);
   }
 
   colocarPuntos(gramaticaT: GramaticaT) {
-    for (let i = 0; i < gramaticaT.variables.length; i++) {
-      for (let f = 0; f < gramaticaT.variables[i].producciones.length; f++) {
-        gramaticaT.variables[i].orden = i;
-        gramaticaT.variables[i].producciones[f] = "." + gramaticaT.variables[i].producciones[f];
+    for (let g = 0; g < gramaticaT.estadosLRAR.length; g++) {
+      for (let i = 0; i < gramaticaT.estadosLRAR[g].variables.length; i++) {
+        for (let f = 0; f < gramaticaT.estadosLRAR[g].variables[i].producciones.length; f++) {
+          gramaticaT.estadosLRAR[g].variables[i].orden = i;
+          gramaticaT.estadosLRAR[g].variables[i].producciones[f] = "." + gramaticaT.estadosLRAR[g].variables[i].producciones[f];
+        }
       }
     }
-    console.log(gramaticaT);
-    console.log(gramaticaT.variables);
     console.log(gramaticaT.variables[0].producciones);
+    console.log(gramaticaT.estadosLRAR[0])
+    for (let f = 0; f < gramaticaT.estadosLRAR[0].variables.length; f++) {
+      console.log(gramaticaT.estadosLRAR[0].variables[f]);
 
+    }
 
   }
 
