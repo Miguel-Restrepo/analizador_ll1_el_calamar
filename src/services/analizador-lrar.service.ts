@@ -63,6 +63,8 @@ export class AnalizadorLrarService {
       console.log(gramaticaT.estadosLRAR[0].variables[f]);
 
     }
+    gramaticaT.estadosLRAR.push(this.generarEstado(gramaticaT, gramaticaT.estadosLRAR[0].variables[0].variable, gramaticaT.estadosLRAR[0]));
+
 
   }
 
@@ -74,6 +76,135 @@ export class AnalizadorLrarService {
 
   }
 
+  funcionRecursivaSacaEstado(gramaticaT: GramaticaT, variable: string): EstadoT {
+    let estado = new EstadoT();
+    let variableT = new VariableT();
+    variableT.variable = variable;
+    variableT.producciones = this.obtenerProducionesPrimero(gramaticaT, variable);
+    estado.variables.push(variableT);
+    return estado;
+  }
+  obtenerProducionesPrimero(gramaticaT: GramaticaT, variable: string): string[] {//Funcion para optener las produciones
+    let arregloProduciones: string[] = [];
+    gramaticaT.variables.forEach(element => {
+      if (element.variable == variable) {
+        element.producciones.forEach(producion => {
+          arregloProduciones.push("." + producion);
+          let tmp = producion.split("");
+          if (tmp.length == 1) {
+            arregloProduciones.push("$");
+          }
+        });
+        return element.producciones;
+      }
+    });
+    return []
+  }
+  generarEstado(gramaticaT: GramaticaT, variable: string, estadoAnterior: EstadoT): EstadoT {
+    let estado = new EstadoT();
+    estado.variables=[]
+    let variableT = new VariableT();
+    variableT.variable = variable;
+    variableT.producciones = [];
+    estadoAnterior.variables.forEach(element => {
+      if (element.variable == variable) {
+        element.producciones.forEach(elemento => {
+          let nuevaPro = this.moverPunto(elemento)
+          variableT.producciones.push(nuevaPro);
+          switch (this.despuesPunto(nuevaPro)) {
+            case 1://Tiene mayuscula
+              this.obtenerVariableT(gramaticaT, this.despuesPuntoEsp(nuevaPro), estadoAnterior, estado)
+              break;
+            case 2://Tiene minuscula
+              variableT.producciones.push(this.despuesPuntoEsp(nuevaPro));
+              break;
+            case 3://Esta vacio
+
+              break;
+            default:
+              break;
+          }
+        });
+      }
+    });
+    estado.variables.push(variableT);
+    return estado;
+  }
+  obtenerVariableT(gramaticaT: GramaticaT, variable: string, estadoAnterior: EstadoT, estadoActual: EstadoT) {
+    let variableT = new VariableT();
+    variableT.variable = variable;
+    variableT.producciones = [];
+    estadoAnterior.variables.forEach(element => {
+      if (element.variable == variable) {
+        element.producciones.forEach(elemento => {
+          let nuevaPro = this.moverPunto(elemento)
+          variableT.producciones.push(nuevaPro);
+          switch (this.despuesPunto(nuevaPro)) {
+            case 1://Tiene mayuscula
+              this.obtenerVariableT(gramaticaT, this.despuesPuntoEsp(nuevaPro), estadoAnterior, estadoActual)
+              break;
+            case 2://Tiene minuscula
+              variableT.producciones.push(this.despuesPuntoEsp(nuevaPro));
+              break;
+            case 3://Esta vacio
+              variableT.producciones.push("$");
+              break;
+            default:
+              break;
+          }
+        });
+      }
+    });
+    estadoActual.variables.push(variableT);
+  }
+  despuesPuntoEsp(cadena: string): string {
+    let caden = cadena.split('');
+    for (let i = 0; i < caden.length - 1; i++) {
+      if (caden[i] == ".") {
+        if (this.tiene_Capital(caden[i + 1])) {
+          return caden[i + 1];//Tiene una mayuscula
+        }
+
+      }
+
+
+    }
+    return "";
+  }
+  despuesPunto(cadena: string): number {
+    let caden = cadena.split('');
+    for (let i = 0; i < caden.length - 1; i++) {
+      if (caden[i] == ".") {
+        if (this.tiene_Capital(caden[i + 1])) {
+          return 1;//Tiene una mayuscula
+        }
+        else {
+          return 2;//Tiene una minuscula u algo mas
+        }
+
+      }
+
+
+    }
+    return 3;//Fin
+
+  }
+  moverPunto(cadena: string): string {//Me mueve un espacio el punto
+    let caden = cadena.split('');
+    let cadenaNueva = "";
+    let contador = 0;
+    caden.forEach(element => {
+      contador = contador + 1;
+      if (element == ".") {
+        cadenaNueva = cadenaNueva + caden[contador];
+      }
+      else {
+        cadenaNueva = cadenaNueva + element;
+      }
+    });
+    return cadenaNueva;
+
+  }
   buscarPrimero(gramaticaT: GramaticaT, buscado: string): string[] {
     gramaticaT.primeros.forEach(element => {
       if (element.variable == buscado) {
@@ -111,7 +242,15 @@ export class AnalizadorLrarService {
   funcionRecursiva(gramaticaT: GramaticaT) {
 
   }
-
+  tiene_Capital(texto: String): boolean {
+    let letras = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
+    for (let i = 0; i < texto.length; i++) {
+      if (letras.indexOf(texto.charAt(i), 0) != -1) {
+        return true;
+      }
+    }
+    return false;
+  }
   obtenerDespuesPunto(): string {
     return "";
   }

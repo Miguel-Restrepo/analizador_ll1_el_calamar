@@ -1,0 +1,8 @@
+{
+  "nombre": "Gramatica Fase 3",
+  "Variables_produciones": [
+    "S->CC",
+    "C->aC",
+    "C->d"
+  ]
+}
